@@ -98,6 +98,33 @@ switch ($_GET['op']) {
 
         echo json_encode($result);
 
-    break;
+        break;
 
+    case 'mostrar_usuario':
+
+        $datos = $usuario->getusuario($_POST['user_id']);
+
+        if (is_array($datos) == true and count($datos) <> 0) {
+            foreach ($datos as $row) {
+
+                $output['id'] = $row['id'];
+                $output['nombre'] = $row['nombre'];
+                $output['ap_paterno'] = $row['ap_paterno'];
+                $output['ap_materno'] = $row['ap_materno'];
+                $output['correo'] = $row['correo'];
+                $output['pass'] = $row['pass'];
+                $output['sexo'] = $row['sexo'];
+                $output['telefono'] = $row['telefono'];
+            }
+
+            echo json_encode($output);
+        }
+
+        break;
+
+    case 'actualizar_usuario':
+
+        $usuario->updateUsuario($_POST['usuario']);
+
+        break;
 }

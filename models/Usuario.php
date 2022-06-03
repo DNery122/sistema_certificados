@@ -29,6 +29,7 @@ class Usuario extends conectar
                     $_SESSION['ap_paterno'] = $resultado['ap_paterno'];
                     $_SESSION['ap_materno'] = $resultado['ap_materno'];
                     $_SESSION['correo'] = $resultado['correo'];
+                    $_SESSION['rol_id'] = $resultado['rol_id'];
                     header('Location:' . conectar::ruta() . 'view/UserHome');
                     exit();
                 } else {
@@ -138,6 +139,42 @@ class Usuario extends conectar
         $sql = $conectar->prepare($sql);
         $sql->bindValue(1, $user);
         $sql->bindValue(2, $limit, PDO::PARAM_INT);
+        $sql->execute();
+        return $resultado = $sql->fetchAll();
+    }
+
+    public function getusuario($user)
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
+        $sql = "SELECT * FROM tm_usuario WHERE estado = 1 AND id = ?";
+        $sql = $conectar->prepare($sql);
+        $sql->bindValue(1, $user, PDO::PARAM_INT);
+        $sql->execute();
+        return $resultado = $sql->fetchAll();
+    }
+
+    public function updateUsuario($user)
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
+        $sql = "UPDATE tm_usuario
+                SET
+                    nombre = ?,
+                    ap_paterno = ?,
+                    ap_materno = ?,
+                    pass = ?,
+                    sexo = ?,
+                    telefono = ?
+                WHERE id = ?";
+        $sql = $conectar->prepare($sql);
+        $sql->bindValue(1, $user['nombre'], PDO::PARAM_STR);
+        $sql->bindValue(2, $user['paterno'], PDO::PARAM_STR);
+        $sql->bindValue(3, $user['materno'], PDO::PARAM_STR);
+        $sql->bindValue(4, $user['pass'], PDO::PARAM_STR);
+        $sql->bindValue(5, $user['sexo'], PDO::PARAM_STR);
+        $sql->bindValue(6, $user['telefono'], PDO::PARAM_STR);
+        $sql->bindValue(7, $user['id'], PDO::PARAM_INT);
         $sql->execute();
         return $resultado = $sql->fetchAll();
     }
