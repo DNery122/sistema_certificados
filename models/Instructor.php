@@ -2,57 +2,57 @@
 class Instructor extends conectar
 {
 
-    public function insert_instructor($categoria)
+    public function insert_instructor($instructor)
     {
         $conectar = parent::conexion();
         parent::set_names();
-        $sql = "INSERT INTO tm_curso
-                (categoria_id,instructor_id,nombre,descripcion,fecha_inicio,fecha_fin,fecha_registro,estado)
+        $sql = "INSERT INTO tm_instructor
+                (nombre,ap_paterno,ap_materno,correo,sexo,telefono,fecha_registro,estado)
                 VALUES
                 (?,?,?,?,?,?,now(),1)";
         $sql = $conectar->prepare($sql);
-        $sql->bindValue(1, $curso['categoria_id'], PDO::PARAM_INT);
-        $sql->bindValue(2, $curso['instructor_id'], PDO::PARAM_INT);
-        $sql->bindValue(3, $curso['nombre'], PDO::PARAM_STR);
-        $sql->bindValue(4, $curso['descripcion'], PDO::PARAM_STR);
-        $sql->bindValue(5, $curso['fecha_inicio'], PDO::PARAM_STR);
-        $sql->bindValue(6, $curso['fecha_fin'], PDO::PARAM_STR);
+        $sql->bindValue(1, $instructor['nombre'], PDO::PARAM_STR);
+        $sql->bindValue(2, $instructor['ap_paterno'], PDO::PARAM_STR);
+        $sql->bindValue(3, $instructor['ap_materno'], PDO::PARAM_STR);
+        $sql->bindValue(4, $instructor['correo'], PDO::PARAM_STR);
+        $sql->bindValue(5, $instructor['sexo'], PDO::PARAM_STR);
+        $sql->bindValue(6, $instructor['telefono'], PDO::PARAM_STR);
         $sql->execute();
         return $resultado = $sql->fetchAll();
     }
 
-    public function update_instructor($categoria)
+    public function update_instructor($instructor)
     {
         $conectar = parent::conexion();
         parent::set_names();
-        $sql = "UPDATE tm_curso
+        $sql = "UPDATE tm_instructor
                 SET
-                    categoria_id = ?,
-                    instructor_id = ?,
                     nombre = ?,
-                    descripcion = ?,
-                    fecha_inicio = ?,
-                    fecha_fin = ?
+                    ap_paterno = ?,
+                    ap_materno = ?,
+                    correo = ?,
+                    sexo = ?,
+                    telefono = ?
                 WHERE id = ?";
         $sql = $conectar->prepare($sql);
-        $sql->bindValue(1, $curso['categoria_id'], PDO::PARAM_INT);
-        $sql->bindValue(2, $curso['instructor_id'], PDO::PARAM_INT);
-        $sql->bindValue(3, $curso['nombre'], PDO::PARAM_STR);
-        $sql->bindValue(4, $curso['descripcion'], PDO::PARAM_STR);
-        $sql->bindValue(5, $curso['fecha_inicio'], PDO::PARAM_STR);
-        $sql->bindValue(6, $curso['fecha_fin'], PDO::PARAM_STR);
-        $sql->bindValue(7, $curso['id'], PDO::PARAM_INT);
+        $sql->bindValue(1, $instructor['nombre'], PDO::PARAM_STR);
+        $sql->bindValue(2, $instructor['ap_paterno'], PDO::PARAM_STR);
+        $sql->bindValue(3, $instructor['ap_materno'], PDO::PARAM_STR);
+        $sql->bindValue(4, $instructor['correo'], PDO::PARAM_STR);
+        $sql->bindValue(5, $instructor['sexo'], PDO::PARAM_STR);
+        $sql->bindValue(6, $instructor['telefono'], PDO::PARAM_STR);
+        $sql->bindValue(7, $instructor['id'], PDO::PARAM_INT);
         $sql->execute();
         return $resultado = $sql->fetchAll();
     }
 
-    public function delete_instructor($categoria)
+    public function delete_instructor($instructor)
     {
         $conectar = parent::conexion();
         parent::set_names();
-        $sql = "UPDATE tm_curso SET estado = 0 WHERE id = ?";
+        $sql = "UPDATE tm_instructor SET estado = 0 WHERE id = ?";
         $sql = $conectar->prepare($sql);
-        $sql->bindValue(1, $curso, PDO::PARAM_INT);
+        $sql->bindValue(1, $instructor, PDO::PARAM_INT);
         $sql->execute();
         return $resultado = $sql->fetchAll();
     }
@@ -61,19 +61,19 @@ class Instructor extends conectar
     {
         $conectar = parent::conexion();
         parent::set_names();
-        $sql = "SELECT * FROM tm_instructor WHERE estado = 1";
+        $sql = "SELECT * FROM tm_instructor WHERE estado = 1 ORDER BY id DESC";
         $sql = $conectar->prepare($sql);
         $sql->execute();
         return $resultado = $sql->fetchAll();
     }
 
-    public function get_instructorID($categoria)
+    public function get_instructorID($instructor)
     {
         $conectar = parent::conexion();
         parent::set_names();
-        $sql = "SELECT * FROM tm_curso WHERE estado = 1 AND id = ?";
+        $sql = "SELECT * FROM tm_instructor WHERE estado = 1 AND id = ?";
         $sql = $conectar->prepare($sql);
-        $sql->bindValue(1, $categoria, PDO::PARAM_INT);
+        $sql->bindValue(1, $instructor, PDO::PARAM_INT);
         $sql->execute();
         return $resultado = $sql->fetchAll();
     }

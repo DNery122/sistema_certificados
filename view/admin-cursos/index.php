@@ -49,8 +49,8 @@ if (isset($_SESSION['id'])) {
                                     <th class="wd-15p">Categoria</th>
                                     <th class="wd-15p">Instructor</th>
                                     <th class="wd-15p">Nombre</th>
-                                    <th class="wd-15p">Fecha inicio</th>
-                                    <th class="wd-20p">Fecha fin</th>
+                                    <th class="wd-10p">Fecha inicio</th>
+                                    <th class="wd-10p">Fecha fin</th>
                                     <th class="wd-10p">Acciones</th>
                                 </tr>
                             </thead>

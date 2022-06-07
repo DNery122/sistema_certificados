@@ -100,9 +100,37 @@ switch ($_GET['op']) {
 
         break;
 
+    case 'listar_usuarios':
+
+        $datos = $usuario->getUsuarios();
+        $data = array();
+
+        foreach ($datos as $row) {
+            $sub_array = array();
+            $sub_array[] = strtoupper($row['nombre']);
+            $sub_array[] = strtoupper($row['ap_paterno']);
+            $sub_array[] = strtoupper($row['ap_materno']);
+            $sub_array[] = strtoupper($row['correo']);
+            $sub_array[] = $row['sexo'];
+            $sub_array[] = $row['telefono'];
+            $sub_array[] = '<button type="button" onClick="editar(' . $row['id'] . ');" id="' . $row['id'] . '" class="btn btn-outline-warning btn-icon"> <div><i class="fa fa-edit"></i></div></button>
+                            <button type="button" onClick="eliminar(' . $row['id'] . ');" id="' . $row['id'] . '" class="btn btn-outline-danger btn-icon"> <div><i class="fa fa-close"></i></div></button>';
+            $data[] = $sub_array;
+        }
+
+        $result = array(
+            "sEcho" => 1,
+            "iTotalRecords" => count($data),
+            "iTotalDisplayRecords" => count($data),
+            "aaData" => $data
+        );
+
+        echo json_encode($result);
+        break;
+
     case 'mostrar_usuario':
 
-        $datos = $usuario->getusuario($_POST['user_id']);
+        $datos = $usuario->getusuario($_POST['id']);
 
         if (is_array($datos) == true and count($datos) <> 0) {
             foreach ($datos as $row) {
@@ -125,6 +153,98 @@ switch ($_GET['op']) {
     case 'actualizar_usuario':
 
         $usuario->updateUsuario($_POST['usuario']);
+
+        break;
+
+    case 'guardar_editar':
+
+        if (empty($_POST['id'])) {
+            $usuario->insert_usuario_admin([
+                'nombre'        => $_POST['nombre'],
+                'ap_paterno'    => $_POST['ap_paterno'],
+                'ap_materno'    => $_POST['ap_materno'],
+                'correo'        => $_POST['correo'],
+                'pass'          => $_POST['pass'],
+                'sexo'          => $_POST['sexo'],
+                'telefono'      => $_POST['telefono']
+            ]);
+        } else {
+            $usuario->update_usuario_admin([
+                'nombre'        => $_POST['nombre'],
+                'ap_paterno'    => $_POST['ap_paterno'],
+                'ap_materno'    => $_POST['ap_materno'],
+                'correo'        => $_POST['correo'],
+                'pass'          => $_POST['pass'],
+                'sexo'          => $_POST['sexo'],
+                'telefono'      => $_POST['telefono'],
+                'id'            => $_POST['id']
+            ]);
+        }
+        break;
+
+    case 'eliminar':
+
+        $usuario->delete_usuario_admin($_POST['id']);
+
+        break;
+
+    case 'listar_usuarios_curso':
+
+        $datos = $usuario->get_usuarios_curso($_POST['id']);
+        $data = array();
+
+        foreach ($datos as $row) {
+            $sub_array = array();
+            $sub_array[] = strtoupper($row['nombre_curso']);
+            $sub_array[] = strtoupper($row['nombre_usuario']) . ' ' . strtoupper($row['paterno_usuario']) . ' ' . strtoupper($row['materno_usuario']);
+            $sub_array[] = $row['fecha_inicio_curso'];
+            $sub_array[] = $row['fecha_fin_curso'];
+            $sub_array[] = strtoupper($row['nombre_instructor']) . ' ' . strtoupper($row['paterno_instructor']);
+            $sub_array[] = '<button type="button" onClick="certificado(' . $row['id'] . ');" id="' . $row['id'] . '" class="btn btn-outline-primary btn-icon"> <div><i class="fa fa-id-card-o"></i></div></button>
+                            <button type="button" onClick="eliminar(' . $row['id'] . ');" id="' . $row['id'] . '" class="btn btn-outline-danger btn-icon"> <div><i class="fa fa-close"></i></div></button>';
+            $data[] = $sub_array;
+        }
+
+        $result = array(
+            "sEcho" => 1,
+            "iTotalRecords" => count($data),
+            "iTotalDisplayRecords" => count($data),
+            "aaData" => $data
+        );
+
+        echo json_encode($result);
+
+        break;
+
+    case 'eliminar_curso_usuario':
+
+        $usuario->delete_curso_usuario($_POST['id']);
+
+        break;
+
+    case 'listar_usuarios_modal':
+
+        $datos = $usuario->getUsuarios_modal($_POST['curso_id']);
+        $data = array();
+
+        foreach ($datos as $row) {
+            $sub_array = array();
+            $sub_array[] = '<input type="checkbox" name="usuario_check[]" value="' . $row['id'] . '">';
+            $sub_array[] = strtoupper($row['nombre']);
+            $sub_array[] = strtoupper($row['ap_paterno']);
+            $sub_array[] = strtoupper($row['ap_materno']);
+            $sub_array[] = strtoupper($row['correo']);
+            $data[] = $sub_array;
+        }
+
+        $result = array(
+            "sEcho" => 1,
+            "iTotalRecords" => count($data),
+            "iTotalDisplayRecords" => count($data),
+            "aaData" => $data
+        );
+
+        echo json_encode($result);
 
         break;
 }

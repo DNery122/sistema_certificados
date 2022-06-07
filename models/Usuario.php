@@ -63,7 +63,8 @@ class Usuario extends conectar
                     inner join tm_curso tc on tcu.curso_id = tc.id 
                     inner join tm_usuario tu on tcu.usuario_id = tu.id
                     inner join tm_instructor ti on tc.instructor_id = ti.id
-                WHERE tcu.usuario_id = ?";
+                WHERE tcu.usuario_id = ?
+                    AND tcu.estado = 1";
         $sql = $conectar->prepare($sql);
         $sql->bindValue(1, $user);
         $sql->execute();
@@ -135,6 +136,7 @@ class Usuario extends conectar
                     inner join tm_usuario tu on tcu.usuario_id = tu.id
                     inner join tm_instructor ti on tc.instructor_id = ti.id
                 WHERE tcu.usuario_id = ? 
+                    AND tcu.estado = 1
                 LIMIT ?";
         $sql = $conectar->prepare($sql);
         $sql->bindValue(1, $user);
@@ -150,6 +152,16 @@ class Usuario extends conectar
         $sql = "SELECT * FROM tm_usuario WHERE estado = 1 AND id = ?";
         $sql = $conectar->prepare($sql);
         $sql->bindValue(1, $user, PDO::PARAM_INT);
+        $sql->execute();
+        return $resultado = $sql->fetchAll();
+    }
+
+    public function getUsuarios()
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
+        $sql = "SELECT * FROM tm_usuario WHERE estado = 1 ORDER BY id DESC";
+        $sql = $conectar->prepare($sql);
         $sql->execute();
         return $resultado = $sql->fetchAll();
     }
@@ -175,6 +187,126 @@ class Usuario extends conectar
         $sql->bindValue(5, $user['sexo'], PDO::PARAM_STR);
         $sql->bindValue(6, $user['telefono'], PDO::PARAM_STR);
         $sql->bindValue(7, $user['id'], PDO::PARAM_INT);
+        $sql->execute();
+        return $resultado = $sql->fetchAll();
+    }
+
+    public function delete_usuario_admin($user)
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
+        $sql = "UPDATE tm_usuario SET estado = 0 WHERE id = ?";
+        $sql = $conectar->prepare($sql);
+        $sql->bindValue(1, $user, PDO::PARAM_INT);
+        $sql->execute();
+        return $resultado = $sql->fetchAll();
+    }
+
+    public function insert_usuario_admin($user)
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
+        $sql = "INSERT INTO tm_usuario
+                (nombre,ap_paterno,ap_materno,correo,pass,sexo,telefono,rol_id,fecha_registro,estado)
+                VALUES
+                (?,?,?,?,?,?,?,1,now(),1)";
+        $sql = $conectar->prepare($sql);
+        $sql->bindValue(1, $user['nombre'], PDO::PARAM_STR);
+        $sql->bindValue(2, $user['ap_paterno'], PDO::PARAM_STR);
+        $sql->bindValue(3, $user['ap_materno'], PDO::PARAM_STR);
+        $sql->bindValue(4, $user['correo'], PDO::PARAM_STR);
+        $sql->bindValue(5, $user['pass'], PDO::PARAM_STR);
+        $sql->bindValue(6, $user['sexo'], PDO::PARAM_STR);
+        $sql->bindValue(7, $user['telefono'], PDO::PARAM_STR);
+        $sql->execute();
+        return $resultado = $sql->fetchAll();
+    }
+
+    public function update_usuario_admin($user)
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
+        $sql = "UPDATE tm_usuario
+                SET
+                    nombre = ?,
+                    ap_paterno = ?,
+                    ap_materno = ?,
+                    correo = ?,
+                    pass = ?,
+                    sexo = ?,
+                    telefono = ?
+                WHERE id = ?";
+        $sql = $conectar->prepare($sql);
+        $sql->bindValue(1, $user['nombre'], PDO::PARAM_STR);
+        $sql->bindValue(2, $user['ap_paterno'], PDO::PARAM_STR);
+        $sql->bindValue(3, $user['ap_materno'], PDO::PARAM_STR);
+        $sql->bindValue(4, $user['correo'], PDO::PARAM_STR);
+        $sql->bindValue(5, $user['pass'], PDO::PARAM_STR);
+        $sql->bindValue(6, $user['sexo'], PDO::PARAM_STR);
+        $sql->bindValue(7, $user['telefono'], PDO::PARAM_STR);
+        $sql->bindValue(8, $user['id'], PDO::PARAM_STR);
+        $sql->execute();
+        return $resultado = $sql->fetchAll();
+    }
+
+    public function get_usuarios_curso($curso)
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
+        $sql = "SELECT
+                    tcu.id,
+                    tc.id AS id_curso,
+                    tc.nombre AS nombre_curso,
+                    tc.descripcion AS descripcion_curso,
+                    tc.fecha_inicio AS fecha_inicio_curso,
+                    tc.fecha_fin AS fecha_fin_curso,
+                    tu.id AS id_usuario,
+                    tu.nombre AS nombre_usuario,
+                    tu.ap_paterno AS paterno_usuario,
+                    tu.ap_materno AS materno_usuario,
+                    ti.id AS id_instructor,
+                    ti.nombre AS nombre_instructor,
+                    ti.ap_paterno AS paterno_instructor,
+                    ti.ap_materno AS materno_instructor 
+                FROM td_curso_usuario tcu
+                    inner join tm_curso tc on tcu.curso_id = tc.id 
+                    inner join tm_usuario tu on tcu.usuario_id = tu.id
+                    inner join tm_instructor ti on tc.instructor_id = ti.id
+                WHERE tc.id = ?
+                    AND tcu.estado = 1";
+        $sql = $conectar->prepare($sql);
+        $sql->bindValue(1, $curso);
+        $sql->execute();
+        return $resultado = $sql->fetchAll();
+    }
+
+    public function delete_curso_usuario($id)
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
+        $sql = "UPDATE td_curso_usuario SET estado = 0 WHERE id = ?";
+        $sql = $conectar->prepare($sql);
+        $sql->bindValue(1, $id, PDO::PARAM_INT);
+        $sql->execute();
+        return $resultado = $sql->fetchAll();
+    }
+
+    public function getUsuarios_modal($curso_id)
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
+        $sql = "SELECT * 
+                FROM tm_usuario 
+                WHERE estado = 1 
+                AND rol_id = 1
+                AND id NOT IN (
+                    SELECT usuario_id
+                    FROM td_curso_usuario
+                    WHERE curso_id = ?
+                )
+                ORDER BY id DESC";
+        $sql = $conectar->prepare($sql);
+        $sql->bindValue(1, $curso_id, PDO::PARAM_INT);
         $sql->execute();
         return $resultado = $sql->fetchAll();
     }

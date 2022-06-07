@@ -2,7 +2,7 @@ var user_id = $("#user_idx").val();
 $(document).ready(function () {
   $.post(
     "../../controller/usuarioController.php?op=mostrar_usuario",
-    { user_id: user_id },
+    { id: user_id },
     function (data) {
       data = JSON.parse(data);
       $("#nombre").val(data.nombre);

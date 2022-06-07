@@ -67,8 +67,8 @@ switch ($_GET['op']) {
 
         foreach ($datos as $row) {
             $sub_array = array();
-            $sub_array[] = $row['nombre_categoria'];
-            $sub_array[] = $row['nombre_instructor'] . ' ' . $row['paterno_instructor'] . ' ' . $row['materno_instructor'];
+            $sub_array[] = strtoupper($row['nombre_categoria']);
+            $sub_array[] = strtoupper($row['nombre_instructor']) . ' ' . strtoupper($row['paterno_instructor']) . ' ' . strtoupper($row['materno_instructor']);
             $sub_array[] = strtoupper($row['nombre']);
             $sub_array[] = $row['fecha_inicio'];
             $sub_array[] = $row['fecha_fin'];
@@ -86,6 +86,31 @@ switch ($_GET['op']) {
 
         echo json_encode($result);
 
+
+        break;
+
+    case 'combo':
+
+        $datos = $curso->get_cursos();
+
+        if (is_array($datos) == true and count($datos) <> 0) {
+            $html = '<option label="Seleccione"></option>';
+            foreach ($datos as $row) {
+                $html .= '<option value="' . $row['id'] . '">' . strtoupper($row['nombre']) . '</option>';
+            }
+
+            echo json_encode($html);
+        }
+
+        break;
+
+    case 'insert_curso_usuario':
+
+        $datos = explode(',', $_POST['usuario_id']);
+
+        foreach ($datos as $row) {
+            $curso->insert_curso_usuario($_POST['curso_id'], $row);
+        }
 
         break;
 }

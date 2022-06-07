@@ -90,4 +90,19 @@ class Curso extends conectar
         $sql->execute();
         return $resultado = $sql->fetchAll();
     }
+
+    public function insert_curso_usuario($curso_id, $usuario_id)
+    {
+        $conectar = parent::conexion();
+        parent::set_names();
+        $sql = "INSERT INTO td_curso_usuario
+                (curso_id, usuario_id, fecha_registro,estado)
+                VALUES
+                (?,?,now(),1)";
+        $sql = $conectar->prepare($sql);
+        $sql->bindValue(1, $curso_id, PDO::PARAM_INT);
+        $sql->bindValue(2, $usuario_id, PDO::PARAM_INT);
+        $sql->execute();
+        return $resultado = $sql->fetchAll();
+    }
 }
